@@ -358,5 +358,365 @@
     "currentPrice": 130.96,
     "originalPrice": 160,
     "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/women/clothing/pants/womens-sportswear-phoenix-fleece-oversized-sweapant/25865775.html?dwvar_25865775_color=BLACK&dwvar_25865775_size=Xs%20%20%20X-Sma&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/women/clothing/pants/womens-sportswear-phoenix-fleece-oversized-sweapant/25865775.html?dwvar_25865775_color=BLACK&dwvar_25865775_size=Xs%20%20%20X-Sma&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25865775_BLACK_0/Womens-Sportswear-Phoenix-Fleece-Oversized-Sweapant-BLACK?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Nike",
+    "currentPrice": 64.97,
+    "originalPrice": 85,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/shoes/women/casual-boots/womens-classic-mini-platform-boot/25638008.html?dwvar_25638008_color=BROWN&dwvar_25638008_size=9&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/shoes/women/casual-boots/womens-classic-mini-platform-boot/25638008.html?dwvar_25638008_color=BROWN&dwvar_25638008_size=9&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25638008_BROWN_0/Womens-Classic-Mini-Platform-Boot-BROWN?$medium$&fmt=auto&w=315&h=315",
+    "brand": "UGG",
+    "currentPrice": 149.97,
+    "originalPrice": 200,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/clearance/deacon-st-ski-%2B-vmotion-10-gw-binding-2025/25806597_000_161.html?cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/clearance/deacon-st-ski-%2B-vmotion-10-gw-binding-2025/25806597_000_161.html?cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25806597_0/Deacon-ST-Ski--vMotion-10-GW-Binding-2025?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Volkl",
+    "currentPrice": 389.94,
+    "originalPrice": 649.99,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/clearance/clear-joy-ski-%2B-joy-9-gw-slr-binding-2025/25894841_000_153.html?cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/clearance/clear-joy-ski-%2B-joy-9-gw-slr-binding-2025/25894841_000_153.html?cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25894841_0/Clear-Joy-Ski--Joy-9-GW-SLR-Binding-2025?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Head",
+    "currentPrice": 359.94,
+    "originalPrice": 599.99,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/mid-layer-jackets/womens-lhotse-reversible-jacket/25919923.html?dwvar_25919923_color=GARDENIA-WHITE&dwvar_25919923_size=S&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/mid-layer-jackets/womens-lhotse-reversible-jacket/25919923.html?dwvar_25919923_color=GARDENIA-WHITE&dwvar_25919923_size=S&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25919923_GARDENIA-WHITE_0/Womens-Lhotse-Reversible-Jacket-GARDENIA-WHITE?$medium$&fmt=auto&w=315&h=315",
+    "brand": "The North Face",
+    "currentPrice": 199.96,
+    "originalPrice": 339.99,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/womens-echo-pant/25648668.html?dwvar_25648668_color=CASHMERE&dwvar_25648668_size=2&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/womens-echo-pant/25648668.html?dwvar_25648668_color=CASHMERE&dwvar_25648668_size=2&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25648668_CASHMERE_0/Womens-Echo-Pant-CASHMERE?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Spyder",
+    "currentPrice": 198.94,
+    "originalPrice": 399,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/ski-jackets/mens-back-country-ski-jacket/25915727.html?dwvar_25915727_color=BLACK&dwvar_25915727_size=S&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/ski-jackets/mens-back-country-ski-jacket/25915727.html?dwvar_25915727_color=BLACK&dwvar_25915727_size=S&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25915727_BLACK_0/Mens-Back-Country-Ski-Jacket-BLACK?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Sunice",
+    "currentPrice": 448.97,
+    "originalPrice": 599,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/snowboard-jackets/mens-smarty-3-in-1-form-jacket/25641366.html?dwvar_25641366_color=GREY&dwvar_25641366_size=Med%20%20Mediu&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/snowboard-jackets/mens-smarty-3-in-1-form-jacket/25641366.html?dwvar_25641366_color=GREY&dwvar_25641366_size=Med%20%20Mediu&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25641366_GREY_0/Mens-Smarty-3-in-1-Form-Jacket-GREY?$medium$&fmt=auto&w=315&h=315",
+    "brand": "686",
+    "currentPrice": 298.97,
+    "originalPrice": 399.95,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/winter-coats/womens-jennie-jacket/25782152.html?dwvar_25782152_color=CREAM&dwvar_25782152_size=M%2FL%20%20Med%20L&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/winter-coats/womens-jennie-jacket/25782152.html?dwvar_25782152_color=CREAM&dwvar_25782152_size=M%2FL%20%20Med%20L&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25782152_CREAM_0/Womens-Jennie-Jacket-CREAM?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Save The Duck",
+    "currentPrice": 228.94,
+    "originalPrice": 458,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/ski-jackets/womens-poise-jacket/25648643.html?dwvar_25648643_color=CASHMERE&dwvar_25648643_size=2&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/ski-jackets/womens-poise-jacket/25648643.html?dwvar_25648643_color=CASHMERE&dwvar_25648643_size=2&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25648643_CASHMERE_0/Womens-Poise-Jacket-CASHMERE?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Spyder",
+    "currentPrice": 324.94,
+    "originalPrice": 650,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/puffers/womens-gibson-reversible-coat/25686635.html?dwvar_25686635_color=CREAM&dwvar_25686635_size=Med%20%20Mediu&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/puffers/womens-gibson-reversible-coat/25686635.html?dwvar_25686635_color=CREAM&dwvar_25686635_size=Med%20%20Mediu&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25686635_CREAM_0/Womens-Gibson-Reversible-Coat-CREAM?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Nobis",
+    "currentPrice": 646.94,
+    "originalPrice": 1295,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/pants/casual-pants/mens-mille-five-pocket-pant/25873852.html?dwvar_25873852_color=NAVY&dwvar_25873852_size=Sml%20%20Small&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/pants/casual-pants/mens-mille-five-pocket-pant/25873852.html?dwvar_25873852_color=NAVY&dwvar_25873852_size=Sml%20%20Small&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25873852_NAVY_0/Mens-Mille-Five-Pocket-Pant-NAVY?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Oak & Ivy",
+    "currentPrice": 38.97,
+    "originalPrice": 65,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/raincoats/mens-antora-jacket/25579111.html?dwvar_25579111_color=SUMMIT-NAVY-TNF-BLACK&dwvar_25579111_size=Sml%20%20Small&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/raincoats/mens-antora-jacket/25579111.html?dwvar_25579111_color=SUMMIT-NAVY-TNF-BLACK&dwvar_25579111_size=Sml%20%20Small&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25579111_SUMMIT-NAVY-TNF-BLACK_0/Mens-Antora-Jacket-SUMMIT-NAVY-TNF-BLACK?$medium$&fmt=auto&w=315&h=315",
+    "brand": "The North Face",
+    "currentPrice": 103.98,
+    "originalPrice": 139.99,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/sweatshirts-hoodies/mens-club-fleece-pullover-hoodie/25223975.html?dwvar_25223975_color=CORAL&dwvar_25223975_size=Sml%20%20Small&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/sweatshirts-hoodies/mens-club-fleece-pullover-hoodie/25223975.html?dwvar_25223975_color=CORAL&dwvar_25223975_size=Sml%20%20Small&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25223975_CORAL_0/Mens-Club-Fleece-Pullover-Hoodie-CORAL?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Nike",
+    "currentPrice": 59.98,
+    "originalPrice": 80,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/ski-jackets/mens-lennox-ski-jacket/25887985.html?dwvar_25887985_color=RED&dwvar_25887985_size=Sml%20%20Small&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/ski-jackets/mens-lennox-ski-jacket/25887985.html?dwvar_25887985_color=RED&dwvar_25887985_size=Sml%20%20Small&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25887985_RED_0/Mens-Lennox-Ski-Jacket-RED?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Sunice",
+    "currentPrice": 629,
+    "originalPrice": 629,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/pants/joggers-sweat-pants/mens-performance-denim-relaxed-taper-jean/25893199.html?dwvar_25893199_color=DarkRinse&dwvar_25893199_size=30&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/pants/joggers-sweat-pants/mens-performance-denim-relaxed-taper-jean/25893199.html?dwvar_25893199_color=DarkRinse&dwvar_25893199_size=30&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25893199_DARK-RINSE_0/Mens-Performance-Denim-Relaxed-Taper-Jean-DARK-RINSE?$medium$&fmt=auto&w=315&h=315",
+    "brand": "DUER",
+    "currentPrice": 73.94,
+    "originalPrice": 149,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/sweatshirts-hoodies/mens-the-comfort-1-4-zip-pullover-sweatshirt/25838343.html?dwvar_25838343_color=GREEN&dwvar_25838343_size=Sml%20%20Small&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/sweatshirts-hoodies/mens-the-comfort-1-4-zip-pullover-sweatshirt/25838343.html?dwvar_25838343_color=GREEN&dwvar_25838343_size=Sml%20%20Small&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25838343_GREEN_0/Mens-The-Comfort-1/4-Zip-Pullover-Sweatshirt-GREEN?$medium$&fmt=auto&w=315&h=315",
+    "brand": "MPG",
+    "currentPrice": 49.96,
+    "originalPrice": 88,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/mid-layer-jackets/mens-synchilla-fleece-shirt-jacket/25865528.html?dwvar_25865528_color=BASIN-GREEN&dwvar_25865528_size=Sml%20%20Small&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/mid-layer-jackets/mens-synchilla-fleece-shirt-jacket/25865528.html?dwvar_25865528_color=BASIN-GREEN&dwvar_25865528_size=Sml%20%20Small&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25865528_BASIN-GREEN_0/Mens-Synchilla-Fleece-Shirt-Jacket-BASIN-GREEN?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Patagonia",
+    "currentPrice": 123.96,
+    "originalPrice": 249,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/puffers/mens-teneca-puffer-parka/25889924.html?dwvar_25889924_color=NAVY&dwvar_25889924_size=Sml%20%20Small&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/puffers/mens-teneca-puffer-parka/25889924.html?dwvar_25889924_color=NAVY&dwvar_25889924_size=Sml%20%20Small&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25889924_NAVY_0/Mens-Teneca-Puffer-Parka-NAVY?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Pajar",
+    "currentPrice": 373.97,
+    "originalPrice": 499,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/ski-jackets/mens-sogn-2.0-shell-jacket/25642349.html?dwvar_25642349_color=EBONY&dwvar_25642349_size=Sml%20%20Small&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/ski-jackets/mens-sogn-2.0-shell-jacket/25642349.html?dwvar_25642349_color=EBONY&dwvar_25642349_size=Sml%20%20Small&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25642349_EBONY_0/Mens-Sogn-2.0-Shell-Jacket-EBONY?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Helly Hansen",
+    "currentPrice": 374.97,
+    "originalPrice": 500,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/mid-layer-jackets/mens-opside-hoodie-jacket/25890658.html?dwvar_25890658_color=BLACK&dwvar_25890658_size=Lg%20%20%20Large&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/mid-layer-jackets/mens-opside-hoodie-jacket/25890658.html?dwvar_25890658_color=BLACK&dwvar_25890658_size=Lg%20%20%20Large&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25890658_BLACK_0/Mens-Opside-Hoodie-Jacket-BLACK?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Rossignol",
+    "currentPrice": 261.97,
+    "originalPrice": 350,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/mid-layer-jackets/mens-arctic-crest%23153--down-jacket/25883489.html?dwvar_25883489_color=BLUE&dwvar_25883489_size=Sml%20%20Small&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/mid-layer-jackets/mens-arctic-crest%23153--down-jacket/25883489.html?dwvar_25883489_color=BLUE&dwvar_25883489_size=Sml%20%20Small&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25883489_BLUE_0/Mens-Arctic-Crest153-Down-Jacket-BLUE?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Columbia",
+    "currentPrice": 221.97,
+    "originalPrice": 369.99,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/mens-nano-puff-jacket/25107285.html?dwvar_25107285_color=ANACAPA-BLUE&dwvar_25107285_size=Med%20%20Mediu&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/men/clothing/coats-jackets/mens-nano-puff-jacket/25107285.html?dwvar_25107285_color=ANACAPA-BLUE&dwvar_25107285_size=Med%20%20Mediu&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25107285_ANACAPA-BLUE_0/Mens-Nano-Puff-Jacket-ANACAPA-BLUE?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Patagonia",
+    "currentPrice": 208.96,
+    "originalPrice": 299,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/women/clothing/tights-leggings/womens-one-high-waist-pocket-7-8-legging/25840588.html?dwvar_25840588_color=BLACK&dwvar_25840588_size=Xs%20%20%20X-Sma&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/women/clothing/tights-leggings/womens-one-high-waist-pocket-7-8-legging/25840588.html?dwvar_25840588_color=BLACK&dwvar_25840588_size=Xs%20%20%20X-Sma&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25840588_BLACK_0/Womens-One-High-Waist-Pocket-7/8-Legging-BLACK?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Nike",
+    "currentPrice": 55.98,
+    "originalPrice": 75,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/ski-jackets/womens-erika-ski-jacket/25426099.html?dwvar_25426099_color=MULTI&dwvar_25426099_size=4&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/ski-jackets/womens-erika-ski-jacket/25426099.html?dwvar_25426099_color=MULTI&dwvar_25426099_size=4&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25426099_MULTI_0/Womens-Erika-Ski-Jacket-MULTI?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Sunice",
+    "currentPrice": 334.97,
+    "originalPrice": 449,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/ski-jackets/womens-alphelia-jacket/25889767.html?dwvar_25889767_color=GREEN&dwvar_25889767_size=Sml%20%20Small&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/ski-jackets/womens-alphelia-jacket/25889767.html?dwvar_25889767_color=GREEN&dwvar_25889767_size=Sml%20%20Small&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25889767_GREEN_0/Womens-Alphelia-Jacket-GREEN?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Helly Hansen",
+    "currentPrice": 449.97,
+    "originalPrice": 600,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/shoes/women/casual-boots/womens-classic-ultra-mini-boot/25872375.html?dwvar_25872375_color=GREY&dwvar_25872375_size=10&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/shoes/women/casual-boots/womens-classic-ultra-mini-boot/25872375.html?dwvar_25872375_color=GREY&dwvar_25872375_size=10&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25872375_GREY_0/Womens-Classic-Ultra-Mini-Boot-GREY?$medium$&fmt=auto&w=315&h=315",
+    "brand": "UGG",
+    "currentPrice": 137.97,
+    "originalPrice": 185,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/winter-coats/womens-dory-parka/25776311.html?dwvar_25776311_color=NAVY&dwvar_25776311_size=Xs%20%20%20X-Sma&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/women/clothing/coats-jackets/winter-coats/womens-dory-parka/25776311.html?dwvar_25776311_color=NAVY&dwvar_25776311_size=Xs%20%20%20X-Sma&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25776311_NAVY_0/Womens-Dory-Parka-NAVY?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Nobis",
+    "currentPrice": 646.94,
+    "originalPrice": 1295,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/shoes/women/hiking-shoes/womens-cloudhorizon-hiking-shoe/25821927.html?dwvar_25821927_color=LAVENDER&dwvar_25821927_size=8.5&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/shoes/women/hiking-shoes/womens-cloudhorizon-hiking-shoe/25821927.html?dwvar_25821927_color=LAVENDER&dwvar_25821927_size=8.5&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25821927_LAVENDER_0/Womens-Cloudhorizon-Hiking-Shoe-LAVENDER?$medium$&fmt=auto&w=315&h=315",
+    "brand": "On",
+    "currentPrice": 156.96,
+    "originalPrice": 210,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/kids/girls/hoodies-sweaters/juniors-7-16-sportswear-club-fleece-oversized-pullover-hoodie/25861790.html?dwvar_25861790_color=ASTER-PINK&dwvar_25861790_size=Xs%20%20%20X-Sma&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/kids/girls/hoodies-sweaters/juniors-7-16-sportswear-club-fleece-oversized-pullover-hoodie/25861790.html?dwvar_25861790_color=ASTER-PINK&dwvar_25861790_size=Xs%20%20%20X-Sma&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25861790_ASTER-PINK_0/Juniors-7-16-Sportswear-Club-Fleece-Oversized-Pullover-Hoodie-ASTER-PINK?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Nike",
+    "currentPrice": 44.98,
+    "originalPrice": 60,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/clearance/juniors-holt-jr-helmet/25096934_000_003.html?cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/clearance/juniors-holt-jr-helmet/25096934_000_003.html?cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25096934_0/Juniors-Holt-Jr-Helmet?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Smith",
+    "currentPrice": 49.94,
+    "originalPrice": 100,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/kids/girls/hoodies-sweaters/junior-girls-7-20-yumiori-full-zip-jacket/25878638.html?dwvar_25878638_color=SLATE-MOSS-WHITE-DUNE&dwvar_25878638_size=Xs%20%20%20X-Sma&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/kids/girls/hoodies-sweaters/junior-girls-7-20-yumiori-full-zip-jacket/25878638.html?dwvar_25878638_color=SLATE-MOSS-WHITE-DUNE&dwvar_25878638_size=Xs%20%20%20X-Sma&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25878638_SLATE-MOSS-WHITE-DUNE_0/Junior-Girls-7-20-Yumiori-Full-Zip-Jacket-SLATE-MOSS-WHITE-DUNE?$medium$&fmt=auto&w=315&h=315",
+    "brand": "The North Face",
+    "currentPrice": 100.98,
+    "originalPrice": 134.99,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/kids/boys/1-piece-2-piece-sets/kids-4-7-sportswear-tech-fleece-hoodie-%2B-pant-two-piece-set/25917371.html?dwvar_25917371_color=HEATHER-GREY-BLACK&dwvar_25917371_size=4&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/kids/boys/1-piece-2-piece-sets/kids-4-7-sportswear-tech-fleece-hoodie-%2B-pant-two-piece-set/25917371.html?dwvar_25917371_color=HEATHER-GREY-BLACK&dwvar_25917371_size=4&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25917371_HEATHER-GREY-BLACK_0/Kids-4-7-Sportswear-Tech-Fleece-Hoodie--Pant-Two-Piece-Set-HEATHER-GREY-BLACK?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Nike",
+    "currentPrice": 92.98,
+    "originalPrice": 125,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/kids/girls/coats-jackets/junior-girls-8-16-zara-ski-jacket/25893041.html?dwvar_25893041_color=PINK&dwvar_25893041_size=12%20%20%20Size&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/kids/girls/coats-jackets/junior-girls-8-16-zara-ski-jacket/25893041.html?dwvar_25893041_color=PINK&dwvar_25893041_size=12%20%20%20Size&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25893041_PINK_0/Junior-Girls-8-16-Zara-Ski-Jacket-PINK?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Sunice",
+    "currentPrice": 123.97,
+    "originalPrice": 249,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/kids/girls/coats-jackets/junior-girls-8-16-serene-jacket/25915813.html?dwvar_25915813_color=JADE&dwvar_25915813_size=8&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/kids/girls/coats-jackets/junior-girls-8-16-serene-jacket/25915813.html?dwvar_25915813_color=JADE&dwvar_25915813_size=8&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25915813_JADE_0/Junior-Girls-8-16-Serene-Jacket-JADE?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Helly Hansen",
+    "currentPrice": 107.94,
+    "originalPrice": 270,
+    "badge": "Clearance"
+  },
+  {
+    "store": "Sporting Life - Laval (online clearance)",
+    "name": "https://www.sportinglife.ca/en-CA/kids/boys/pants/juniors-8-16-side-zip-2.0-pant/25794488.html?dwvar_25794488_color=TANGERINE&dwvar_25794488_size=Sml%20%20Small&cgid=last-run-clearance",
+    "productUrl": "https://www.sportinglife.ca/en-CA/kids/boys/pants/juniors-8-16-side-zip-2.0-pant/25794488.html?dwvar_25794488_color=TANGERINE&dwvar_25794488_size=Sml%20%20Small&cgid=last-run-clearance",
+    "imageUrl": "https://cdn.media.amplience.net/i/sportinglife/25794488_TANGERINE_0/Juniors-8-16-Side-Zip-2.0-Pant-TANGERINE?$medium$&fmt=auto&w=315&h=315",
+    "brand": "Arctica",
+    "currentPrice": 139.94,
+    "originalPrice": 280,
+    "badge": "Clearance"
   }
 ]
