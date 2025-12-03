@@ -89,7 +89,6 @@ async function scrapeSportingLifeLaval() {
   const products = await page.evaluate(() => {
     const items = [];
 
-    // All anchors that look like clearance product detail pages
     const anchors = Array.from(
       document.querySelectorAll('a[href*="/clearance/"][href*=".html"]')
     );
@@ -101,16 +100,32 @@ async function scrapeSportingLifeLaval() {
       if (!href || seen.has(href)) return;
       seen.add(href);
 
-      // Try to build a clean product name
+      // Try to get a human-readable name
       let name =
         a.getAttribute("aria-label") ||
         a.querySelector("span, div, strong")?.textContent ||
         a.textContent ||
         "";
-      name = name.replace(/\s+/g, " ").trim();
-      if (!name) return;
 
-      // Use the closest container as "card"
+      name = name.replace(/\s+/g, " ").trim();
+
+      // If still empty, derive a name from the URL
+      if (!name) {
+        const url = new URL(href, window.location.origin);
+        const path = url.pathname || "";
+        // Take the part after "/clearance/" and before ".html"
+        const match = path.match(/\/clearance\/([^/]+)\/[^/]*\.html/i);
+        const slug = match && match[1] ? match[1] : null;
+        if (slug) {
+          name = slug.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
+        }
+      }
+
+      if (!name) {
+        // As a last resort, keep the URL as the name so we don't drop the product
+        name = href;
+      }
+
       const card = a.closest("li, article, div") || a;
 
       const imgEl =
@@ -125,7 +140,6 @@ async function scrapeSportingLifeLaval() {
       const priceContainer = card.closest("li, article, div") || card;
       const fullText = (priceContainer.textContent || "").replace(/\s+/g, " ");
 
-      // Extract up to 2 prices ($xxx.xx)
       const priceMatches = fullText.match(/\$[\d,.]+/g) || [];
       const currentPriceText = priceMatches[0] || null;
       const originalPriceText = priceMatches.length > 1 ? priceMatches[1] : null;
