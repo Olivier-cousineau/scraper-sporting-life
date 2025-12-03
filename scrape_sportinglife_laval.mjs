@@ -27,53 +27,57 @@ async function findProductCardSelector(page) {
   }, PRODUCT_CARD_SELECTORS);
 }
 
-async function loadAllProducts(page) {
+async function loadAllClearanceProducts(page) {
   console.log("➡️ Loading all products (scroll + load more)…");
 
   let previousCount = 0;
-  let stableIterations = 0;
+  let stagnantIterations = 0;
 
-  while (stableIterations < 3) {
+  const loadMoreSelectors = [
+    'button:has-text("Load more")',
+    'button:has-text("Load More")',
+    '[data-testid="load-more"]',
+    '.load-more',
+  ];
+
+  while (stagnantIterations < 4) {
+    const { count: before } = await findProductCardSelector(page);
+    console.log("DEBUG — current tile count:", before);
+
     await page.evaluate(() => {
       window.scrollTo(0, document.body.scrollHeight);
     });
 
-    await page.evaluate(() => {
-      const buttonCandidates = [
-        'button[data-testid="load-more"]',
-        "button.load-more",
-        "button#load-more",
-        "button[data-load-more]",
-        'button[aria-label*="load more" i]',
-        "a.load-more",
-        'a[aria-label*="load more" i]',
-      ];
-
-      const explicitButton = document.querySelector(buttonCandidates.join(", "));
-      if (explicitButton && !explicitButton.disabled && explicitButton.offsetParent !== null) {
-        explicitButton.click();
-        return;
+    let clicked = false;
+    for (const selector of loadMoreSelectors) {
+      const button = page.locator(selector).first();
+      if (await button.isVisible().catch(() => false)) {
+        console.log("DEBUG — clicking Load more button…");
+        await button.click().catch(() => {});
+        clicked = true;
+        break;
       }
+    }
 
-      const textButton = Array.from(document.querySelectorAll("button, a")).find(
-        (el) => /load more/i.test(el.textContent || "") && el.offsetParent !== null,
-      );
-
-      if (textButton && !textButton.disabled) {
-        textButton.click();
+    if (!clicked) {
+      const fallbackButton = page.locator('button, a', { hasText: /load more/i }).first();
+      if (await fallbackButton.isVisible().catch(() => false)) {
+        console.log("DEBUG — clicking Load more button…");
+        await fallbackButton.click().catch(() => {});
+        clicked = true;
       }
-    });
+    }
 
     await page.waitForTimeout(2000);
 
-    const { count: currentCount } = await findProductCardSelector(page);
-    console.log("DEBUG — current tile count:", currentCount);
+    const { count: after } = await findProductCardSelector(page);
+    console.log("DEBUG — current tile count after:", after);
 
-    if (currentCount <= previousCount) {
-      stableIterations += 1;
+    if (after <= previousCount) {
+      stagnantIterations += 1;
     } else {
-      stableIterations = 0;
-      previousCount = currentCount;
+      stagnantIterations = 0;
+      previousCount = after;
     }
   }
 
@@ -109,7 +113,7 @@ async function scrape() {
   console.log(`➡️ Opening clearance page: ${CLEARANCE_URL}`);
   await page.goto(CLEARANCE_URL, { waitUntil: "networkidle" });
 
-  await loadAllProducts(page);
+  await loadAllClearanceProducts(page);
 
   console.log("➡️ Extracting products…");
 
