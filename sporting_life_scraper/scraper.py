@@ -10,6 +10,7 @@ from urllib.parse import urljoin
 from .http_client import HttpClient
 
 
+SEARCHSPRING_SEARCH_URL = "https://api.searchspring.net/api/search/search.json"
 CONFIG_PATTERN = re.compile(r'siteId"\s*:\s*"(?P<site_id>[^"]+)"')
 DOMAIN_PATTERN = re.compile(r'domain"\s*:\s*"(?P<domain>[^"]+)"')
 COLLECTION_PATTERN = re.compile(r'collection"\s*:\s*"(?P<collection>[^"]+)"')
@@ -81,12 +82,19 @@ class SportingLifeScraper:
 
     def scrape(self) -> List[Product]:
         config = self.discover_config()
-        api_url = self._build_api_url(config["site_id"])
         products: List[Product] = []
         page = 1
         total_pages: Optional[int] = None
         while True:
-            payload = self._fetch_page(api_url, config, page)
+            params = {
+                "siteId": config["site_id"],
+                "page": page,
+                "resultsPerPage": self.results_per_page,
+                "resultsFormat": "native",
+                "domain": config["domain"],
+                "bgfilter.collection": config["collection"],
+            }
+            payload = self._fetch_page(SEARCHSPRING_SEARCH_URL, params)
             page_products = payload.get("results", [])
             for item in page_products:
                 products.append(self._convert_product(config["domain"], item))
@@ -100,18 +108,13 @@ class SportingLifeScraper:
             page += 1
         return products
 
-    def _fetch_page(self, api_url: str, config: Dict[str, str], page: int) -> Dict[str, object]:
-        params = {
-            "siteId": config["site_id"],
-            "page": page,
-            "resultsPerPage": self.results_per_page,
-            "resultsFormat": "native",
-            "domain": config["domain"],
-            "bgfilter.collection": config["collection"],
-        }
+    def _fetch_page(self, api_url: str, params: Dict[str, object]) -> Dict[str, object]:
         response = self.http.get(api_url, params=params)
         if response.status_code >= 400:
-            raise RuntimeError(f"Erreur {response.status_code} lors du chargement de la page {page}")
+            page = params.get("page")
+            raise RuntimeError(
+                f"Erreur {response.status_code} lors du chargement de la page {page}"
+            )
         return json.loads(response.text)
 
     def _convert_product(self, domain: str, payload: Dict[str, object]) -> Product:
@@ -140,9 +143,6 @@ class SportingLifeScraper:
     def _search(pattern: re.Pattern[str], text: str) -> Optional[str]:
         match = pattern.search(text)
         return match.group(1) if match else None
-
-    def _build_api_url(self, site_id: str) -> str:
-        return f"https://{site_id}.a.searchspring.io/api/search/search.json"
 
 
 def scrape_liquidation(**kwargs: object) -> List[Product]:
