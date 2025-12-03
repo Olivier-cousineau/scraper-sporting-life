@@ -8,6 +8,8 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    env:
+      SPORTING_LIFE_SITE_ID: "REPLACE_WITH_REAL_SITE_ID"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,7 +21,10 @@ jobs:
 
       - name: Run scraper
         run: |
-          python -m sporting_life_scraper.cli --output data/liquidation.json --format json
+          python -m sporting_life_scraper.cli \
+            --output data/liquidation.json \
+            --format json \
+            --site-id "$SPORTING_LIFE_SITE_ID"
 
       - name: Upload results
         uses: actions/upload-artifact@v4

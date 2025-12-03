@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from dataclasses import dataclass
 from typing import Dict, List, Optional
@@ -29,20 +30,44 @@ class SportingLifeScraper:
 
     def __init__(
         self,
-        base_url: str = "https://www.sportinglife.ca/fr-CA/liquidation/",
         site_id: Optional[str] = None,
+        *,
+        base_url: str = "https://www.sportinglife.ca/fr-CA/liquidation/",
         collection: Optional[str] = None,
         results_per_page: int = 48,
         http_client: Optional[HttpClient] = None,
+        **kwargs: object,
     ) -> None:
+        super().__init__(**kwargs)
         self.base_url = base_url.rstrip("/") + "/"
         self.site_id = site_id
+        self._explicit_site_id = site_id
         self.collection = collection or "liquidation"
         self.results_per_page = results_per_page
         self.http = http_client or HttpClient()
 
     def discover_config(self) -> Dict[str, str]:
         """Pull configuration values embedded in the listing page."""
+        if getattr(self, "_explicit_site_id", None):
+            site_id = self._explicit_site_id
+            self.site_id = site_id
+            return {
+                "site_id": site_id,
+                "domain": "https://www.sportinglife.ca",
+                "collection": self.collection or "liquidation",
+            }
+
+        env_site_id = os.getenv("SPORTING_LIFE_SITE_ID")
+        if env_site_id:
+            self.site_id = env_site_id
+            return {
+                "site_id": env_site_id,
+                "domain": "https://www.sportinglife.ca",
+                "collection": self.collection or "liquidation",
+            }
+
+        # Fallback: keep the previous auto-discovery logic.
+        # If auto-discovery fails, raise the same RuntimeError as before.
         response = self.http.get(self.base_url)
         html = response.text
         site_id = self.site_id or self._search(CONFIG_PATTERN, html)
