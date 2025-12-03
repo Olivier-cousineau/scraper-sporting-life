@@ -15,6 +15,8 @@ const PRODUCT_CARD_SELECTORS = [
   "article",
 ];
 
+let PRODUCT_TILE_SELECTOR;
+
 async function findProductCardSelector(page) {
   return page.evaluate((selectors) => {
     for (const sel of selectors) {
@@ -27,70 +29,59 @@ async function findProductCardSelector(page) {
   }, PRODUCT_CARD_SELECTORS);
 }
 
-async function loadAllClearanceProducts(page, PRODUCT_TILE_SELECTOR) {
-  console.log("➡️ Loading all products (scroll + load more)…");
+async function loadAllClearanceProducts(page) {
+  console.log('➡️ Loading all products (scroll + load more)…');
 
-  // Make sure at least one tile is present
+  // Make sure at least the first batch is loaded
   await page.waitForSelector(PRODUCT_TILE_SELECTOR, { timeout: 30000 });
 
   let previousCount = 0;
-  let clickCount = 0;
+  let stableIterations = 0;
 
-  while (true) {
-    const currentCount = await page.$$eval(PRODUCT_TILE_SELECTOR, (tiles) => tiles.length);
-    console.log("DEBUG — current tile count:", currentCount);
+  while (stableIterations < 5) {
+    // Count BEFORE this iteration
+    const before = await page.$$eval(PRODUCT_TILE_SELECTOR, tiles => tiles.length);
+    console.log('DEBUG — current tile count:', before);
 
-    // safety: if no growth after some clicks, stop
-    if (clickCount > 0 && currentCount <= previousCount) {
-      console.log("DEBUG — tile count not increasing, stopping to avoid infinite loop.");
-      break;
-    }
-
-    // find the "Show More" button
-    const showMoreButton =
-      (await page.$("text=/Show More/i")) ||
-      (await page.$('button:has-text("Show More")')) ||
-      (await page.$('a:has-text("Show More")'));
-
-    if (!showMoreButton) {
-      console.log('DEBUG — no "Show More" button found, stopping.');
-      break;
-    }
-
-    console.log("DEBUG — clicking Show More");
-    previousCount = currentCount;
-    clickCount += 1;
-
-    await showMoreButton.click();
-
-    // Wait for new tiles to appear
-    try {
-      await page.waitForFunction(
-        (sel, prev) => document.querySelectorAll(sel).length > prev,
-        { timeout: 20000 },
-        PRODUCT_TILE_SELECTOR,
-        previousCount,
-      );
-    } catch (e) {
-      console.log("DEBUG — no new tiles after click, stopping.");
-      break;
-    }
-
-    // Optionally scroll to bottom after loading
+    // Scroll to the bottom of the page
     await page.evaluate(() => {
       window.scrollTo(0, document.body.scrollHeight);
     });
     await page.waitForTimeout(1000);
 
-    // Optional safety cap to avoid infinite loop
-    if (clickCount > 300) {
-      console.log("DEBUG — reached safety click limit, stopping.");
-      break;
+    // Try to find a "Show More" button
+    const showMoreButton =
+      (await page.$('text=/Show More/i')) ||
+      (await page.$('button:has-text("Show More")')) ||
+      (await page.$('a:has-text("Show More")'));
+
+    if (showMoreButton) {
+      console.log('DEBUG — clicking Show More');
+      await showMoreButton.click();
+      // Wait a bit for new products to load
+      await page.waitForTimeout(3000);
+    } else {
+      console.log('DEBUG — no "Show More" button found on this iteration');
+      // Still give the page a chance to lazy-load on scroll
+      await page.waitForTimeout(2000);
+    }
+
+    // Count AFTER this iteration
+    const after = await page.$$eval(PRODUCT_TILE_SELECTOR, tiles => tiles.length);
+    console.log('DEBUG — current tile count after:', after);
+
+    if (after <= before) {
+      // No growth during this iteration
+      stableIterations += 1;
+    } else {
+      // We got new products, reset stability counter
+      stableIterations = 0;
+      previousCount = after;
     }
   }
 
-  const finalCount = await page.$$eval(PRODUCT_TILE_SELECTOR, (tiles) => tiles.length);
-  console.log("DEBUG — final tile count before extraction:", finalCount);
+  const finalCount = await page.$$eval(PRODUCT_TILE_SELECTOR, tiles => tiles.length);
+  console.log('DEBUG — final tile count before extraction:', finalCount);
 }
 
 function extractPrice(text) {
@@ -122,9 +113,10 @@ async function scrape() {
   console.log(`➡️ Opening clearance page: ${CLEARANCE_URL}`);
   await page.goto(CLEARANCE_URL, { waitUntil: "networkidle" });
 
-  const { selector: PRODUCT_TILE_SELECTOR } = await findProductCardSelector(page);
+  const { selector } = await findProductCardSelector(page);
+  PRODUCT_TILE_SELECTOR = selector;
 
-  await loadAllClearanceProducts(page, PRODUCT_TILE_SELECTOR);
+  await loadAllClearanceProducts(page);
 
   console.log("➡️ Extracting products…");
 
