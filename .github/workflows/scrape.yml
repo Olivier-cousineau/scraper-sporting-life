@@ -1,0 +1,28 @@
+name: Scraper Sporting Life
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run scraper
+        run: |
+          python -m sporting_life_scraper.cli --output data/liquidation.json --format json
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: sporting-life-liquidation
+          path: data/liquidation.json
