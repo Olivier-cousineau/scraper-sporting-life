@@ -5,24 +5,33 @@ import path from "path";
 const CLEARANCE_URL = "https://www.sportinglife.ca/en-CA/clearance/";
 const OUTPUT_PATH = path.join("data", "sportinglife_laval_clearance.json");
 
+async function scrollToBottomUntilStable(page, { maxRounds = 40 } = {}) {
+  let lastHeight = 0;
+
+  for (let i = 0; i < maxRounds; i++) {
+    const currentHeight = await page.evaluate(() => {
+      window.scrollBy(0, window.innerHeight * 0.9);
+      return document.body.scrollHeight;
+    });
+
+    await page.waitForTimeout(800);
+
+    if (currentHeight <= lastHeight) {
+      break;
+    }
+
+    lastHeight = currentHeight;
+  }
+}
+
 async function loadAllProducts(page) {
   console.log("➡️ Loading all products (scroll + load more)…");
 
-  const maxScrollRounds = 25;
-  for (let i = 0; i < maxScrollRounds; i++) {
-    await page.evaluate(() => {
-      window.scrollBy(0, window.innerHeight * 0.9);
-    });
-    await page.waitForTimeout(800);
-
-    const atBottom = await page.evaluate(() => {
-      return window.innerHeight + window.scrollY >= document.body.scrollHeight - 10;
-    });
-
-    if (atBottom) break;
-  }
+  await scrollToBottomUntilStable(page);
 
   const LOAD_MORE_SELECTORS = [
+    'button:has-text("Load more")',
+    'a:has-text("Load more")',
     "button.load-more",
     "button#load-more",
     "button[data-load-more]",
@@ -38,15 +47,22 @@ async function loadAllProducts(page) {
     const isVisible = await loadMore.isVisible().catch(() => false);
     if (!isVisible) break;
 
+    const beforeHeight = await page.evaluate(() => document.body.scrollHeight);
     console.log("➡️ Clicking Load more…");
-    await loadMore.click();
-    await page.waitForTimeout(1500);
 
-    await page.evaluate(() => window.scrollBy(0, window.innerHeight * 0.5));
+    await Promise.all([
+      loadMore.click(),
+      page.waitForTimeout(1500),
+    ]);
+
+    await scrollToBottomUntilStable(page, { maxRounds: 20 });
+    const afterHeight = await page.evaluate(() => document.body.scrollHeight);
+    if (afterHeight <= beforeHeight) {
+      break;
+    }
   }
 
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  await page.waitForTimeout(1000);
+  await scrollToBottomUntilStable(page, { maxRounds: 60 });
 
   console.log("   • Scroll / Load more finished.");
 }
@@ -84,69 +100,115 @@ async function scrape() {
 
   console.log("➡️ Extracting products…");
 
-  const rawItems = await page.$$eval("a", (anchors) => {
-    return anchors.map((a) => ({
-      href: a.href || "",
-      text: (a.textContent || "").trim().replace(/\s+/g, " "),
-      closestTileText: (
-        a.closest("li, article, .product, .product-tile, .product-grid-item") ||
-        document.body
-      ).innerText
-        .replace(/\s+/g, " ")
-        .trim()
-        .slice(0, 300),
-    }));
-  });
+  const PRODUCT_CARD_SELECTORS = [
+    "li.product-grid__item",
+    "div.product-grid__item",
+    "div.product-tile",
+    "article.product-tile",
+    "div.product-card",
+    "article",
+  ];
 
-  const productHrefRegex = /\/clearance\/.+\.html/i;
-  const productMap = new Map();
+  const { selector: chosenSelector } = await page.evaluate((selectors) => {
+    for (const sel of selectors) {
+      const matches = document.querySelectorAll(sel);
+      if (matches.length > 0) {
+        return { selector: sel, count: matches.length };
+      }
+    }
+    return { selector: selectors[selectors.length - 1], count: 0 };
+  }, PRODUCT_CARD_SELECTORS);
 
-  for (const item of rawItems) {
-    const { href, text, closestTileText } = item;
-    if (!href) continue;
-    if (!href.startsWith("https://www.sportinglife.ca/")) continue;
-    if (!productHrefRegex.test(href)) continue;
+  const tiles = await page.$$(chosenSelector);
+  console.log("DEBUG — product tiles:", tiles.length);
 
-    const urlObj = new URL(href);
-    const key = urlObj.origin + urlObj.pathname;
+  const preview = await page.$$eval(
+    chosenSelector,
+    (cards) =>
+      cards.slice(0, 5).map((card) => {
+        const titleEl =
+          card.querySelector('[data-testid*="title"], [data-test*="title"], .product-name, .product__name, h3, h4, a');
+        const title = (titleEl?.textContent || "").trim().replace(/\s+/g, " ");
+        const linkEl =
+          card.querySelector('a[href*="/clearance/"]') ||
+          card.querySelector('a[href*="/products/"]') ||
+          card.querySelector("a");
+        const href = linkEl ? linkEl.href : "";
+        return { title, href };
+      }),
+  );
 
-    if (!productMap.has(key)) {
-      let name =
-        text && text.length > 5
-          ? text
-          : (closestTileText.split("$")[0] || "").trim();
+  console.log(
+    "DEBUG — first titles:",
+    preview.map((p) => `${p.title} -> ${p.href}`).join(" | ") || "<none>",
+  );
 
-      if (!name) {
-        const path = urlObj.pathname || "";
-        const match = path.match(/\/clearance\/([^/]+)\//i);
-        const slug = match && match[1] ? match[1] : null;
-        if (slug) {
-          name = slug.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
-        } else {
-          name = href;
-        }
+  const products = await page.$$eval(chosenSelector, (cards) => {
+    const extractPrices = (container) => {
+      const priceText =
+        container.querySelector('[class*="price"], [data-testid*="price"], [data-test*="price"]')?.textContent ||
+        container.innerText;
+      const prices = [...(priceText || "").matchAll(/\$([\d,]+(?:\.\d{2})?)/g)].map((m) =>
+        parseFloat(m[1].replace(",", "")),
+      );
+
+      if (prices.length === 0) {
+        return { currentPrice: null, originalPrice: null };
       }
 
-      const priceInfo = extractPrice(closestTileText);
+      const currentPrice = prices[prices.length - 1];
+      const originalPrice = prices.length > 1 ? prices[0] : null;
+      return { currentPrice, originalPrice };
+    };
 
-      productMap.set(key, {
+    return cards.map((card) => {
+      const titleEl =
+        card.querySelector('[data-testid*="title"], [data-test*="title"], .product-name, .product__name, h3, h4, a');
+      const title = (titleEl?.textContent || "").trim().replace(/\s+/g, " ");
+
+      const linkEl =
+        card.querySelector('a[href*="/clearance/"]') ||
+        card.querySelector('a[href*="/products/"]') ||
+        card.querySelector("a");
+      const href = linkEl ? linkEl.href : null;
+
+      const brandEl = card.querySelector(
+        '[data-testid*="brand"], [data-test*="brand"], .product-brand, .product__brand, .brand',
+      );
+      const brand = (brandEl?.textContent || "").trim() || null;
+
+      const imageEl = card.querySelector("img");
+      const imageUrl = imageEl ? imageEl.src || imageEl.getAttribute("data-src") : null;
+
+      const { currentPrice, originalPrice } = extractPrices(card);
+
+      return {
         store: "Sporting Life - Laval (online clearance)",
-        name,
-        productUrl: key,
-        imageUrl: null,
-        currentPrice: priceInfo.currentPrice,
-        originalPrice: priceInfo.originalPrice,
+        name: title || href || "",
+        productUrl: href,
+        imageUrl,
+        brand,
+        currentPrice,
+        originalPrice,
         badge: "Clearance",
-      });
-    }
+      };
+    });
+  });
+
+  const unique = [];
+  const seen = new Set();
+  for (const product of products) {
+    if (!product.productUrl) continue;
+    const normalizedUrl = new URL(product.productUrl, window.location.origin).toString();
+    if (seen.has(normalizedUrl)) continue;
+    seen.add(normalizedUrl);
+    unique.push({ ...product, productUrl: normalizedUrl });
   }
 
-  const products = Array.from(productMap.values());
-
-  console.log(`✅ ${products.length} products found.`);
+  console.log(`✅ ${unique.length} products found.`);
 
   fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
-  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(products, null, 2), "utf-8");
+  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(unique, null, 2), "utf-8");
 
   console.log(`💾 Written file: ${OUTPUT_PATH}`);
 
