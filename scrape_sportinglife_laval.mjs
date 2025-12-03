@@ -6,64 +6,76 @@ const CLEARANCE_URL = "https://www.sportinglife.ca/en-CA/clearance/";
 const BASE_URL = "https://www.sportinglife.ca";
 const OUTPUT_PATH = path.join("data", "sportinglife_laval_clearance.json");
 
-async function scrollToBottomUntilStable(page, { maxRounds = 40 } = {}) {
-  let lastHeight = 0;
+const PRODUCT_CARD_SELECTORS = [
+  "li.product-grid__item",
+  "div.product-grid__item",
+  "div.product-tile",
+  "article.product-tile",
+  "div.product-card",
+  "article",
+];
 
-  for (let i = 0; i < maxRounds; i++) {
-    const currentHeight = await page.evaluate(() => {
-      window.scrollBy(0, window.innerHeight * 0.9);
-      return document.body.scrollHeight;
-    });
-
-    await page.waitForTimeout(800);
-
-    if (currentHeight <= lastHeight) {
-      break;
+async function findProductCardSelector(page) {
+  return page.evaluate((selectors) => {
+    for (const sel of selectors) {
+      const matches = document.querySelectorAll(sel);
+      if (matches.length > 0) {
+        return { selector: sel, count: matches.length };
+      }
     }
-
-    lastHeight = currentHeight;
-  }
+    return { selector: selectors[selectors.length - 1], count: 0 };
+  }, PRODUCT_CARD_SELECTORS);
 }
 
 async function loadAllProducts(page) {
   console.log("➡️ Loading all products (scroll + load more)…");
 
-  await scrollToBottomUntilStable(page);
+  let previousCount = 0;
+  let stableIterations = 0;
 
-  const LOAD_MORE_SELECTORS = [
-    'button:has-text("Load more")',
-    'a:has-text("Load more")',
-    "button.load-more",
-    "button#load-more",
-    "button[data-load-more]",
-    'button[aria-label*="Load more"]',
-    "a.load-more",
-    'a[aria-label*="Load more"]'
-  ];
+  while (stableIterations < 3) {
+    await page.evaluate(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+    });
 
-  while (true) {
-    const loadMore = await page.$(LOAD_MORE_SELECTORS.join(", "));
-    if (!loadMore) break;
+    await page.evaluate(() => {
+      const buttonCandidates = [
+        'button[data-testid="load-more"]',
+        "button.load-more",
+        "button#load-more",
+        "button[data-load-more]",
+        'button[aria-label*="load more" i]',
+        "a.load-more",
+        'a[aria-label*="load more" i]',
+      ];
 
-    const isVisible = await loadMore.isVisible().catch(() => false);
-    if (!isVisible) break;
+      const explicitButton = document.querySelector(buttonCandidates.join(", "));
+      if (explicitButton && !explicitButton.disabled && explicitButton.offsetParent !== null) {
+        explicitButton.click();
+        return;
+      }
 
-    const beforeHeight = await page.evaluate(() => document.body.scrollHeight);
-    console.log("➡️ Clicking Load more…");
+      const textButton = Array.from(document.querySelectorAll("button, a")).find(
+        (el) => /load more/i.test(el.textContent || "") && el.offsetParent !== null,
+      );
 
-    await Promise.all([
-      loadMore.click(),
-      page.waitForTimeout(1500),
-    ]);
+      if (textButton && !textButton.disabled) {
+        textButton.click();
+      }
+    });
 
-    await scrollToBottomUntilStable(page, { maxRounds: 20 });
-    const afterHeight = await page.evaluate(() => document.body.scrollHeight);
-    if (afterHeight <= beforeHeight) {
-      break;
+    await page.waitForTimeout(2000);
+
+    const { count: currentCount } = await findProductCardSelector(page);
+    console.log("DEBUG — current tile count:", currentCount);
+
+    if (currentCount <= previousCount) {
+      stableIterations += 1;
+    } else {
+      stableIterations = 0;
+      previousCount = currentCount;
     }
   }
-
-  await scrollToBottomUntilStable(page, { maxRounds: 60 });
 
   console.log("   • Scroll / Load more finished.");
 }
@@ -101,24 +113,7 @@ async function scrape() {
 
   console.log("➡️ Extracting products…");
 
-  const PRODUCT_CARD_SELECTORS = [
-    "li.product-grid__item",
-    "div.product-grid__item",
-    "div.product-tile",
-    "article.product-tile",
-    "div.product-card",
-    "article",
-  ];
-
-  const { selector: chosenSelector } = await page.evaluate((selectors) => {
-    for (const sel of selectors) {
-      const matches = document.querySelectorAll(sel);
-      if (matches.length > 0) {
-        return { selector: sel, count: matches.length };
-      }
-    }
-    return { selector: selectors[selectors.length - 1], count: 0 };
-  }, PRODUCT_CARD_SELECTORS);
+  const { selector: chosenSelector } = await findProductCardSelector(page);
 
   const tiles = await page.$$(chosenSelector);
   console.log("DEBUG — product tiles:", tiles.length);
