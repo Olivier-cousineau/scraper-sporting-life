@@ -73,21 +73,49 @@ async function scrapeSportingLifeLaval() {
   console.log("DEBUG — first href samples:", debugInfo.hrefSamples);
   console.log("DEBUG — text sample:\n", debugInfo.textSample);
 
+  const clearanceDebug = await page.evaluate(() => {
+    const anchors = Array.from(
+      document.querySelectorAll('a[href*="/clearance/"][href*=".html"]')
+    );
+    return {
+      count: anchors.length,
+      samples: anchors.slice(0, 20).map((a) => a.href),
+    };
+  });
+
+  console.log("DEBUG — clearance anchors:", clearanceDebug.count);
+  console.log("DEBUG — clearance href samples:", clearanceDebug.samples);
+
   const products = await page.evaluate(() => {
     const items = [];
+
+    // All anchors that look like clearance product detail pages
     const anchors = Array.from(
-      document.querySelectorAll('a[href*="/p/"], a[href*="/product/"]')
+      document.querySelectorAll('a[href*="/clearance/"][href*=".html"]')
     );
 
-    anchors.forEach((a) => {
-      const name = a.textContent?.trim() || null;
-      const productUrl = a.href || null;
-      if (!name || !productUrl) return;
+    const seen = new Set();
 
+    anchors.forEach((a) => {
+      const href = a.href;
+      if (!href || seen.has(href)) return;
+      seen.add(href);
+
+      // Try to build a clean product name
+      let name =
+        a.getAttribute("aria-label") ||
+        a.querySelector("span, div, strong")?.textContent ||
+        a.textContent ||
+        "";
+      name = name.replace(/\s+/g, " ").trim();
+      if (!name) return;
+
+      // Use the closest container as "card"
       const card = a.closest("li, article, div") || a;
 
       const imgEl =
-        card.querySelector("img") || a.querySelector("img");
+        card.querySelector("img") ||
+        a.querySelector("img");
 
       const imageUrl =
         imgEl?.getAttribute("src") ||
@@ -95,30 +123,28 @@ async function scrapeSportingLifeLaval() {
         null;
 
       const priceContainer = card.closest("li, article, div") || card;
+      const fullText = (priceContainer.textContent || "").replace(/\s+/g, " ");
 
-      const currentPriceText =
-        priceContainer.querySelector(
-          '.price__sale, .product-price__sale, [data-qa="product-sale-price"], .price, .product-price'
-        )?.textContent?.trim() || null;
+      // Extract up to 2 prices ($xxx.xx)
+      const priceMatches = fullText.match(/\$[\d,.]+/g) || [];
+      const currentPriceText = priceMatches[0] || null;
+      const originalPriceText = priceMatches.length > 1 ? priceMatches[1] : null;
 
-      const originalPriceText =
-        priceContainer.querySelector(
-          '.price__was, .product-price__original, [data-qa="product-original-price"], .price--original'
-        )?.textContent?.trim() || null;
-
-      const badgeText =
-        priceContainer.querySelector(
-          '[data-qa="badge"], .badge, .product-label, .product-flag'
-        )?.textContent?.trim() || null;
+      const badge =
+        fullText.includes("Final Sale")
+          ? "Final Sale"
+          : fullText.includes("Clearance")
+          ? "Clearance"
+          : null;
 
       items.push({
         store: "Sporting Life - Laval (online clearance)",
         name,
-        productUrl,
+        productUrl: href,
         imageUrl,
         currentPrice: currentPriceText,
         originalPrice: originalPriceText,
-        badge: badgeText,
+        badge,
       });
     });
 
