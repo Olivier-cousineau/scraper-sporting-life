@@ -31,54 +31,54 @@ async function loadAllClearanceProducts(page) {
   console.log("➡️ Loading all products (scroll + load more)…");
 
   const { selector: PRODUCT_TILE_SELECTOR } = await findProductCardSelector(page);
-  let stableIterations = 0;
+  let previousCount = 0;
 
-  while (stableIterations < 5) {
-    const before = await page.$$eval(PRODUCT_TILE_SELECTOR, (tiles) => tiles.length);
-    console.log("DEBUG — current tile count:", before);
+  while (true) {
+    const currentCount = await page.$$eval(
+      PRODUCT_TILE_SELECTOR,
+      (tiles) => tiles.length,
+    );
+    console.log("DEBUG — current tile count:", currentCount);
 
-    await page.evaluate(() => {
-      window.scrollTo(0, document.body.scrollHeight);
-    });
-    await page.waitForTimeout(1500);
+    const showMoreButton =
+      (await page.$('text=/Show More/i')) ??
+      (await page.$('button:has-text("Show More")')) ??
+      (await page.$('a:has-text("Show More")'));
 
-    const clicked = await page.evaluate(() => {
-      const candidates = Array.from(document.querySelectorAll("button, a, div, span"));
+    if (!showMoreButton) {
+      break;
+    }
 
-      const btn = candidates.find((el) => {
-        const text = (el.textContent || "").trim().toLowerCase();
-        return (
-          text.includes("load more") ||
-          text.includes("view more") ||
-          text.includes("voir plus")
-        );
-      });
+    previousCount = currentCount;
 
-      if (btn && btn instanceof HTMLElement) {
-        btn.click();
-        return true;
-      }
-      return false;
-    });
+    await showMoreButton.click();
+    console.log("DEBUG — clicked Show More");
+    await page.waitForTimeout(2500);
 
-    if (clicked) {
-      console.log("DEBUG — clicked Load more / Voir plus");
-      await page.waitForTimeout(2500);
-    } else {
-      console.log("DEBUG — no Load more / Voir plus found on this iteration");
+    let increased = false;
+    try {
+      await page.waitForFunction(
+        (sel, prev) => document.querySelectorAll(sel).length > prev,
+        {},
+        PRODUCT_TILE_SELECTOR,
+        previousCount,
+      );
+      increased = true;
+    } catch (err) {
+      increased = false;
     }
 
     const after = await page.$$eval(PRODUCT_TILE_SELECTOR, (tiles) => tiles.length);
     console.log("DEBUG — current tile count after:", after);
 
-    if (after <= before) {
-      stableIterations += 1;
-    } else {
-      stableIterations = 0;
+    if (!increased || after <= previousCount) {
+      break;
     }
   }
 
+  const finalCount = await page.$$eval(PRODUCT_TILE_SELECTOR, (tiles) => tiles.length);
   console.log("   • Scroll / Load more finished.");
+  console.log("DEBUG — final tile count before extraction:", finalCount);
 }
 
 function extractPrice(text) {
