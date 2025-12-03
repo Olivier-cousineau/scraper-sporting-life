@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 
 const CLEARANCE_URL = "https://www.sportinglife.ca/en-CA/clearance/";
+const BASE_URL = "https://www.sportinglife.ca";
 const OUTPUT_PATH = path.join("data", "sportinglife_laval_clearance.json");
 
 async function scrollToBottomUntilStable(page, { maxRounds = 40 } = {}) {
@@ -199,7 +200,7 @@ async function scrape() {
   const seen = new Set();
   for (const product of products) {
     if (!product.productUrl) continue;
-    const normalizedUrl = new URL(product.productUrl, window.location.origin).toString();
+    const normalizedUrl = new URL(product.productUrl, BASE_URL).toString();
     if (seen.has(normalizedUrl)) continue;
     seen.add(normalizedUrl);
     unique.push({ ...product, productUrl: normalizedUrl });
