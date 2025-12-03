@@ -27,57 +27,69 @@ async function findProductCardSelector(page) {
   }, PRODUCT_CARD_SELECTORS);
 }
 
-async function loadAllClearanceProducts(page) {
+async function loadAllClearanceProducts(page, PRODUCT_TILE_SELECTOR) {
   console.log("➡️ Loading all products (scroll + load more)…");
 
-  const { selector: PRODUCT_TILE_SELECTOR } = await findProductCardSelector(page);
+  // Make sure at least one tile is present
+  await page.waitForSelector(PRODUCT_TILE_SELECTOR, { timeout: 30000 });
+
   let previousCount = 0;
+  let clickCount = 0;
 
   while (true) {
-    const currentCount = await page.$$eval(
-      PRODUCT_TILE_SELECTOR,
-      (tiles) => tiles.length,
-    );
+    const currentCount = await page.$$eval(PRODUCT_TILE_SELECTOR, (tiles) => tiles.length);
     console.log("DEBUG — current tile count:", currentCount);
 
-    const showMoreButton =
-      (await page.$('text=/Show More/i')) ??
-      (await page.$('button:has-text("Show More")')) ??
-      (await page.$('a:has-text("Show More")'));
-
-    if (!showMoreButton) {
+    // safety: if no growth after some clicks, stop
+    if (clickCount > 0 && currentCount <= previousCount) {
+      console.log("DEBUG — tile count not increasing, stopping to avoid infinite loop.");
       break;
     }
 
+    // find the "Show More" button
+    const showMoreButton =
+      (await page.$("text=/Show More/i")) ||
+      (await page.$('button:has-text("Show More")')) ||
+      (await page.$('a:has-text("Show More")'));
+
+    if (!showMoreButton) {
+      console.log('DEBUG — no "Show More" button found, stopping.');
+      break;
+    }
+
+    console.log("DEBUG — clicking Show More");
     previousCount = currentCount;
+    clickCount += 1;
 
     await showMoreButton.click();
-    console.log("DEBUG — clicked Show More");
-    await page.waitForTimeout(2500);
 
-    let increased = false;
+    // Wait for new tiles to appear
     try {
       await page.waitForFunction(
         (sel, prev) => document.querySelectorAll(sel).length > prev,
-        {},
+        { timeout: 20000 },
         PRODUCT_TILE_SELECTOR,
         previousCount,
       );
-      increased = true;
-    } catch (err) {
-      increased = false;
+    } catch (e) {
+      console.log("DEBUG — no new tiles after click, stopping.");
+      break;
     }
 
-    const after = await page.$$eval(PRODUCT_TILE_SELECTOR, (tiles) => tiles.length);
-    console.log("DEBUG — current tile count after:", after);
+    // Optionally scroll to bottom after loading
+    await page.evaluate(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+    await page.waitForTimeout(1000);
 
-    if (!increased || after <= previousCount) {
+    // Optional safety cap to avoid infinite loop
+    if (clickCount > 300) {
+      console.log("DEBUG — reached safety click limit, stopping.");
       break;
     }
   }
 
   const finalCount = await page.$$eval(PRODUCT_TILE_SELECTOR, (tiles) => tiles.length);
-  console.log("   • Scroll / Load more finished.");
   console.log("DEBUG — final tile count before extraction:", finalCount);
 }
 
@@ -110,17 +122,17 @@ async function scrape() {
   console.log(`➡️ Opening clearance page: ${CLEARANCE_URL}`);
   await page.goto(CLEARANCE_URL, { waitUntil: "networkidle" });
 
-  await loadAllClearanceProducts(page);
+  const { selector: PRODUCT_TILE_SELECTOR } = await findProductCardSelector(page);
+
+  await loadAllClearanceProducts(page, PRODUCT_TILE_SELECTOR);
 
   console.log("➡️ Extracting products…");
 
-  const { selector: chosenSelector } = await findProductCardSelector(page);
-
-  const tiles = await page.$$(chosenSelector);
+  const tiles = await page.$$(PRODUCT_TILE_SELECTOR);
   console.log("DEBUG — product tiles:", tiles.length);
 
   const preview = await page.$$eval(
-    chosenSelector,
+    PRODUCT_TILE_SELECTOR,
     (cards) =>
       cards.slice(0, 5).map((card) => {
         const titleEl =
@@ -140,7 +152,7 @@ async function scrape() {
     preview.map((p) => `${p.title} -> ${p.href}`).join(" | ") || "<none>",
   );
 
-  const products = await page.$$eval(chosenSelector, (cards) => {
+  const products = await page.$$eval(PRODUCT_TILE_SELECTOR, (cards) => {
     const extractPrices = (container) => {
       const priceText =
         container.querySelector('[class*="price"], [data-testid*="price"], [data-test*="price"]')?.textContent ||
