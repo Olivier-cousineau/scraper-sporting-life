@@ -7,6 +7,7 @@ on:
 
 jobs:
   scrape:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     env:
       SPORTING_LIFE_SITE_ID: "REPLACE_WITH_REAL_SITE_ID"
