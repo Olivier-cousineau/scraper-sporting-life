@@ -48,34 +48,24 @@ async function scrapeSportingLifeLaval() {
 
   const products = await page.evaluate(() => {
     const items = [];
-
-    // All product anchors
-    const anchors = Array.from(
-      document.querySelectorAll('a[href*="/p/"]')
-    );
+    const anchors = Array.from(document.querySelectorAll('a[href*="/p/"]'));
 
     anchors.forEach((a) => {
       const name = a.textContent?.trim() || null;
       const productUrl = a.href || null;
-
       if (!name || !productUrl) return;
 
-      // Use the closest container as a "card"
-      const card =
-        a.closest("li, article, div") || a.parentElement || a;
+      const card = a.closest("li, article, div") || a;
 
       const imgEl =
-        card.querySelector("img") ||
-        a.querySelector("img");
+        card.querySelector("img") || a.querySelector("img");
 
       const imageUrl =
         imgEl?.getAttribute("src") ||
         imgEl?.getAttribute("data-src") ||
         null;
 
-      // Try to grab prices near the anchor
-      const priceContainer =
-        card.closest("li, article, div") || card;
+      const priceContainer = card.closest("li, article, div") || card;
 
       const currentPriceText =
         priceContainer.querySelector(
