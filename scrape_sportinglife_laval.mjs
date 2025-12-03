@@ -49,52 +49,58 @@ async function scrapeSportingLifeLaval() {
   const products = await page.evaluate(() => {
     const items = [];
 
-    const cards = document.querySelectorAll(
-      '[data-qa="product-tile"], .product-tile, .product-grid__item'
+    // All product anchors
+    const anchors = Array.from(
+      document.querySelectorAll('a[href*="/p/"]')
     );
 
-    cards.forEach((card) => {
-      const name =
-        card.querySelector(
-          '[data-qa="product-name"], .product__title, .product-tile__title'
-        )?.textContent?.trim() || null;
+    anchors.forEach((a) => {
+      const name = a.textContent?.trim() || null;
+      const productUrl = a.href || null;
 
-      const link =
-        card.querySelector('a[href*="/p/"]')?.href ||
-        card.querySelector('a[href*="/product/"]')?.href ||
+      if (!name || !productUrl) return;
+
+      // Use the closest container as a "card"
+      const card =
+        a.closest("li, article, div") || a.parentElement || a;
+
+      const imgEl =
+        card.querySelector("img") ||
+        a.querySelector("img");
+
+      const imageUrl =
+        imgEl?.getAttribute("src") ||
+        imgEl?.getAttribute("data-src") ||
         null;
 
-      const img =
-        card.querySelector("img")?.getAttribute("src") ||
-        card.querySelector("img")?.getAttribute("data-src") ||
-        null;
+      // Try to grab prices near the anchor
+      const priceContainer =
+        card.closest("li, article, div") || card;
 
       const currentPriceText =
-        card.querySelector(
-          ".price__sale, .product-price__sale, [data-qa=\"product-sale-price\"]"
+        priceContainer.querySelector(
+          '.price__sale, .product-price__sale, [data-qa="product-sale-price"], .price, .product-price'
         )?.textContent?.trim() || null;
 
       const originalPriceText =
-        card.querySelector(
-          ".price__was, .product-price__original, [data-qa=\"product-original-price\"]"
+        priceContainer.querySelector(
+          '.price__was, .product-price__original, [data-qa="product-original-price"], .price--original'
         )?.textContent?.trim() || null;
 
-      const badge =
-        card.querySelector(
-          "[data-qa=\"badge\"], .badge, .product-label, .product-flag"
+      const badgeText =
+        priceContainer.querySelector(
+          '[data-qa="badge"], .badge, .product-label, .product-flag'
         )?.textContent?.trim() || null;
 
-      if (name && link) {
-        items.push({
-          store: "Sporting Life - Laval (online clearance)",
-          name,
-          productUrl: link,
-          imageUrl: img,
-          currentPrice: currentPriceText,
-          originalPrice: originalPriceText,
-          badge
-        });
-      }
+      items.push({
+        store: "Sporting Life - Laval (online clearance)",
+        name,
+        productUrl,
+        imageUrl,
+        currentPrice: currentPriceText,
+        originalPrice: originalPriceText,
+        badge: badgeText,
+      });
     });
 
     return items;
