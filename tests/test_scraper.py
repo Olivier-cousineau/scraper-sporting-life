@@ -4,7 +4,7 @@ import json
 import unittest
 from typing import Dict, List
 
-from sporting_life_scraper.scraper import SportingLifeScraper
+from sporting_life_scraper.scraper import SEARCHSPRING_SEARCH_URL, SportingLifeScraper
 from sporting_life_scraper.http_client import HttpResponse
 
 
@@ -31,7 +31,7 @@ class SportingLifeScraperTests(unittest.TestCase):
             "https://www.sportinglife.ca/fr-CA/liquidation/": [
                 HttpResponse(status_code=200, text=html, url="https://www.sportinglife.ca/fr-CA/liquidation/")
             ],
-            "https://sc-test.a.searchspring.io/api/search/search.json?{\"bgfilter.collection\": \"liquidation\", \"domain\": \"https://www.sportinglife.ca\", \"page\": 1, \"resultsFormat\": \"native\", \"resultsPerPage\": 2, \"siteId\": \"sc-test\"}": [
+            f"{SEARCHSPRING_SEARCH_URL}?{json.dumps({'bgfilter.collection': 'liquidation', 'domain': 'https://www.sportinglife.ca', 'page': 1, 'resultsFormat': 'native', 'resultsPerPage': 2, 'siteId': 'sc-test'}, sort_keys=True)}": [
                 HttpResponse(
                     status_code=200,
                     text=json.dumps(
@@ -53,12 +53,11 @@ class SportingLifeScraperTests(unittest.TestCase):
         self.assertEqual(len(products), 2)
         self.assertEqual(products[0].name, "Veste")
         self.assertEqual(products[0].sale_price, 50.0)
-        self.assertIn("sc-test", scraper._build_api_url("sc-test"))
 
     def test_paginates_until_no_results(self) -> None:
         html = '<script>var config = {"siteId":"sc-test","domain":"https://www.sportinglife.ca","collection":"liquidation"};</script>'
         base_listing = "https://www.sportinglife.ca/fr-CA/liquidation/"
-        api = "https://sc-test.a.searchspring.io/api/search/search.json"
+        api = SEARCHSPRING_SEARCH_URL
         responses = {
             base_listing: [HttpResponse(status_code=200, text=html, url=base_listing)],
             f"{api}?{json.dumps({'bgfilter.collection': 'liquidation', 'domain': 'https://www.sportinglife.ca', 'page': 1, 'resultsFormat': 'native', 'resultsPerPage': 1, 'siteId': 'sc-test'}, sort_keys=True)}": [
