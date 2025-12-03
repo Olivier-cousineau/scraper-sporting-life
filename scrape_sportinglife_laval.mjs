@@ -30,54 +30,51 @@ async function findProductCardSelector(page) {
 async function loadAllClearanceProducts(page) {
   console.log("➡️ Loading all products (scroll + load more)…");
 
-  let previousCount = 0;
-  let stagnantIterations = 0;
+  const { selector: PRODUCT_TILE_SELECTOR } = await findProductCardSelector(page);
+  let stableIterations = 0;
 
-  const loadMoreSelectors = [
-    'button:has-text("Load more")',
-    'button:has-text("Load More")',
-    '[data-testid="load-more"]',
-    '.load-more',
-  ];
-
-  while (stagnantIterations < 4) {
-    const { count: before } = await findProductCardSelector(page);
+  while (stableIterations < 5) {
+    const before = await page.$$eval(PRODUCT_TILE_SELECTOR, (tiles) => tiles.length);
     console.log("DEBUG — current tile count:", before);
 
     await page.evaluate(() => {
       window.scrollTo(0, document.body.scrollHeight);
     });
+    await page.waitForTimeout(1500);
 
-    let clicked = false;
-    for (const selector of loadMoreSelectors) {
-      const button = page.locator(selector).first();
-      if (await button.isVisible().catch(() => false)) {
-        console.log("DEBUG — clicking Load more button…");
-        await button.click().catch(() => {});
-        clicked = true;
-        break;
+    const clicked = await page.evaluate(() => {
+      const candidates = Array.from(document.querySelectorAll("button, a, div, span"));
+
+      const btn = candidates.find((el) => {
+        const text = (el.textContent || "").trim().toLowerCase();
+        return (
+          text.includes("load more") ||
+          text.includes("view more") ||
+          text.includes("voir plus")
+        );
+      });
+
+      if (btn && btn instanceof HTMLElement) {
+        btn.click();
+        return true;
       }
+      return false;
+    });
+
+    if (clicked) {
+      console.log("DEBUG — clicked Load more / Voir plus");
+      await page.waitForTimeout(2500);
+    } else {
+      console.log("DEBUG — no Load more / Voir plus found on this iteration");
     }
 
-    if (!clicked) {
-      const fallbackButton = page.locator('button, a', { hasText: /load more/i }).first();
-      if (await fallbackButton.isVisible().catch(() => false)) {
-        console.log("DEBUG — clicking Load more button…");
-        await fallbackButton.click().catch(() => {});
-        clicked = true;
-      }
-    }
-
-    await page.waitForTimeout(2000);
-
-    const { count: after } = await findProductCardSelector(page);
+    const after = await page.$$eval(PRODUCT_TILE_SELECTOR, (tiles) => tiles.length);
     console.log("DEBUG — current tile count after:", after);
 
-    if (after <= previousCount) {
-      stagnantIterations += 1;
+    if (after <= before) {
+      stableIterations += 1;
     } else {
-      stagnantIterations = 0;
-      previousCount = after;
+      stableIterations = 0;
     }
   }
 
