@@ -46,9 +46,38 @@ async function scrapeSportingLifeLaval() {
 
   console.log("➡️ Extracting products…");
 
+  // Petit debug pour voir ce que la page contient
+  const debugInfo = await page.evaluate(() => {
+    const allAnchors = Array.from(document.querySelectorAll("a"));
+    const hrefSamples = allAnchors
+      .map((a) => a.getAttribute("href") || "")
+      .filter(Boolean)
+      .slice(0, 50); // 50 premiers pour voir les patterns
+
+    const textSample = document.body.innerText.slice(0, 500);
+
+    const productAnchors = Array.from(
+      document.querySelectorAll('a[href*="/p/"], a[href*="/product/"], a[href*="/en-CA/"]')
+    );
+
+    return {
+      totalAnchors: allAnchors.length,
+      productAnchorCount: productAnchors.length,
+      hrefSamples,
+      textSample,
+    };
+  });
+
+  console.log("DEBUG — total anchors:", debugInfo.totalAnchors);
+  console.log("DEBUG — candidate product anchors:", debugInfo.productAnchorCount);
+  console.log("DEBUG — first href samples:", debugInfo.hrefSamples);
+  console.log("DEBUG — text sample:\n", debugInfo.textSample);
+
   const products = await page.evaluate(() => {
     const items = [];
-    const anchors = Array.from(document.querySelectorAll('a[href*="/p/"]'));
+    const anchors = Array.from(
+      document.querySelectorAll('a[href*="/p/"], a[href*="/product/"]')
+    );
 
     anchors.forEach((a) => {
       const name = a.textContent?.trim() || null;
