@@ -2,182 +2,160 @@ import { chromium } from "playwright";
 import fs from "fs";
 import path from "path";
 
-const CLEARANCE_URL =
-  process.env.SPORTING_LIFE_CLEARANCE_URL ||
-  "https://www.sportinglife.ca/en-CA/clearance/";
+const CLEARANCE_URL = "https://www.sportinglife.ca/en-CA/clearance/";
+const OUTPUT_PATH = path.join("data", "sportinglife_laval_clearance.json");
 
-async function scrapeSportingLifeLaval() {
-  console.log("➡️ Opening clearance page:", CLEARANCE_URL);
+async function loadAllProducts(page) {
+  console.log("➡️ Loading all products (scroll + load more)…");
 
+  const maxScrollRounds = 25;
+  for (let i = 0; i < maxScrollRounds; i++) {
+    await page.evaluate(() => {
+      window.scrollBy(0, window.innerHeight * 0.9);
+    });
+    await page.waitForTimeout(800);
+
+    const atBottom = await page.evaluate(() => {
+      return window.innerHeight + window.scrollY >= document.body.scrollHeight - 10;
+    });
+
+    if (atBottom) break;
+  }
+
+  const LOAD_MORE_SELECTORS = [
+    "button.load-more",
+    "button#load-more",
+    "button[data-load-more]",
+    'button[aria-label*="Load more"]',
+    "a.load-more",
+    'a[aria-label*="Load more"]'
+  ];
+
+  while (true) {
+    const loadMore = await page.$(LOAD_MORE_SELECTORS.join(", "));
+    if (!loadMore) break;
+
+    const isVisible = await loadMore.isVisible().catch(() => false);
+    if (!isVisible) break;
+
+    console.log("➡️ Clicking Load more…");
+    await loadMore.click();
+    await page.waitForTimeout(1500);
+
+    await page.evaluate(() => window.scrollBy(0, window.innerHeight * 0.5));
+  }
+
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.waitForTimeout(1000);
+
+  console.log("   • Scroll / Load more finished.");
+}
+
+function extractPrice(text) {
+  if (!text) return { currentPrice: null, originalPrice: null };
+
+  const prices = [...text.matchAll(/\$([\d,]+(?:\.\d{2})?)/g)].map((m) =>
+    parseFloat(m[1].replace(",", ""))
+  );
+  if (prices.length === 0) return { currentPrice: null, originalPrice: null };
+
+  let originalPrice = null;
+  let currentPrice = null;
+
+  if (prices.length === 1) {
+    currentPrice = prices[0];
+  } else {
+    originalPrice = prices[0];
+    currentPrice = prices[prices.length - 1];
+  }
+
+  return { currentPrice, originalPrice };
+}
+
+async function scrape() {
   const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage();
 
+  const page = await browser.newPage({ locale: "en-CA" });
+
+  console.log(`➡️ Opening clearance page: ${CLEARANCE_URL}`);
   await page.goto(CLEARANCE_URL, { waitUntil: "networkidle" });
 
-  // Try to close cookie / consent popups if present
-  try {
-    const cookieBtn = await page.locator('button:has-text("Accept")').first();
-    if (await cookieBtn.isVisible()) {
-      await cookieBtn.click();
-      console.log("✅ Cookies popup closed");
-    }
-  } catch (_) {}
-
-  console.log("➡️ Loading all products (scroll / load more)…");
-
-  // Loop to click "Load More" if it exists, otherwise scroll to bottom
-  for (let i = 0; i < 30; i++) {
-    const loadMore = page.locator('button:has-text("Load More")');
-    if (await loadMore.count()) {
-      console.log(`   • Click "Load More" (#${i + 1})`);
-      await loadMore.click();
-      await page.waitForTimeout(3000);
-    } else {
-      const prevHeight = await page.evaluate(() => document.body.scrollHeight);
-      await page.mouse.wheel(0, prevHeight);
-      await page.waitForTimeout(2000);
-      const newHeight = await page.evaluate(() => document.body.scrollHeight);
-      if (newHeight === prevHeight) {
-        console.log("   • Nothing more to load.");
-        break;
-      }
-    }
-  }
+  await loadAllProducts(page);
 
   console.log("➡️ Extracting products…");
 
-  // Petit debug pour voir ce que la page contient
-  const debugInfo = await page.evaluate(() => {
-    const allAnchors = Array.from(document.querySelectorAll("a"));
-    const hrefSamples = allAnchors
-      .map((a) => a.getAttribute("href") || "")
-      .filter(Boolean)
-      .slice(0, 50); // 50 premiers pour voir les patterns
-
-    const textSample = document.body.innerText.slice(0, 500);
-
-    const productAnchors = Array.from(
-      document.querySelectorAll('a[href*="/p/"], a[href*="/product/"], a[href*="/en-CA/"]')
-    );
-
-    return {
-      totalAnchors: allAnchors.length,
-      productAnchorCount: productAnchors.length,
-      hrefSamples,
-      textSample,
-    };
+  const rawItems = await page.$$eval("a", (anchors) => {
+    return anchors.map((a) => ({
+      href: a.href || "",
+      text: (a.textContent || "").trim().replace(/\s+/g, " "),
+      closestTileText: (
+        a.closest("li, article, .product, .product-tile, .product-grid-item") ||
+        document.body
+      ).innerText
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 300),
+    }));
   });
 
-  console.log("DEBUG — total anchors:", debugInfo.totalAnchors);
-  console.log("DEBUG — candidate product anchors:", debugInfo.productAnchorCount);
-  console.log("DEBUG — first href samples:", debugInfo.hrefSamples);
-  console.log("DEBUG — text sample:\n", debugInfo.textSample);
+  const productHrefRegex = /\/clearance\/.+\.html/i;
+  const productMap = new Map();
 
-  const clearanceDebug = await page.evaluate(() => {
-    const anchors = Array.from(
-      document.querySelectorAll('a[href*="/clearance/"][href*=".html"]')
-    );
-    return {
-      count: anchors.length,
-      samples: anchors.slice(0, 20).map((a) => a.href),
-    };
-  });
+  for (const item of rawItems) {
+    const { href, text, closestTileText } = item;
+    if (!href) continue;
+    if (!href.startsWith("https://www.sportinglife.ca/")) continue;
+    if (!productHrefRegex.test(href)) continue;
 
-  console.log("DEBUG — clearance anchors:", clearanceDebug.count);
-  console.log("DEBUG — clearance href samples:", clearanceDebug.samples);
+    const urlObj = new URL(href);
+    const key = urlObj.origin + urlObj.pathname;
 
-  const products = await page.evaluate(() => {
-    const items = [];
-
-    const anchors = Array.from(
-      document.querySelectorAll('a[href*="/clearance/"][href*=".html"]')
-    );
-
-    const seen = new Set();
-
-    anchors.forEach((a) => {
-      const href = a.href;
-      if (!href || seen.has(href)) return;
-      seen.add(href);
-
-      // Try to get a human-readable name
+    if (!productMap.has(key)) {
       let name =
-        a.getAttribute("aria-label") ||
-        a.querySelector("span, div, strong")?.textContent ||
-        a.textContent ||
-        "";
+        text && text.length > 5
+          ? text
+          : (closestTileText.split("$")[0] || "").trim();
 
-      name = name.replace(/\s+/g, " ").trim();
-
-      // If still empty, derive a name from the URL
       if (!name) {
-        const url = new URL(href, window.location.origin);
-        const path = url.pathname || "";
-        // Take the part after "/clearance/" and before ".html"
-        const match = path.match(/\/clearance\/([^/]+)\/[^/]*\.html/i);
+        const path = urlObj.pathname || "";
+        const match = path.match(/\/clearance\/([^/]+)\//i);
         const slug = match && match[1] ? match[1] : null;
         if (slug) {
           name = slug.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
+        } else {
+          name = href;
         }
       }
 
-      if (!name) {
-        // As a last resort, keep the URL as the name so we don't drop the product
-        name = href;
-      }
+      const priceInfo = extractPrice(closestTileText);
 
-      const card = a.closest("li, article, div") || a;
-
-      const imgEl =
-        card.querySelector("img") ||
-        a.querySelector("img");
-
-      const imageUrl =
-        imgEl?.getAttribute("src") ||
-        imgEl?.getAttribute("data-src") ||
-        null;
-
-      const priceContainer = card.closest("li, article, div") || card;
-      const fullText = (priceContainer.textContent || "").replace(/\s+/g, " ");
-
-      const priceMatches = fullText.match(/\$[\d,.]+/g) || [];
-      const currentPriceText = priceMatches[0] || null;
-      const originalPriceText = priceMatches.length > 1 ? priceMatches[1] : null;
-
-      const badge =
-        fullText.includes("Final Sale")
-          ? "Final Sale"
-          : fullText.includes("Clearance")
-          ? "Clearance"
-          : null;
-
-      items.push({
+      productMap.set(key, {
         store: "Sporting Life - Laval (online clearance)",
         name,
-        productUrl: href,
-        imageUrl,
-        currentPrice: currentPriceText,
-        originalPrice: originalPriceText,
-        badge,
+        productUrl: key,
+        imageUrl: null,
+        currentPrice: priceInfo.currentPrice,
+        originalPrice: priceInfo.originalPrice,
+        badge: "Clearance",
       });
-    });
+    }
+  }
 
-    return items;
-  });
-
-  await browser.close();
+  const products = Array.from(productMap.values());
 
   console.log(`✅ ${products.length} products found.`);
 
-  const outDir = path.join("data");
-  const outPath = path.join(outDir, "sportinglife_laval_clearance.json");
-  fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(outPath, JSON.stringify(products, null, 2), "utf8");
+  fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
+  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(products, null, 2), "utf-8");
 
-  console.log("💾 Written file:", outPath);
+  console.log(`💾 Written file: ${OUTPUT_PATH}`);
+
+  await browser.close();
 }
 
-scrapeSportingLifeLaval().catch((err) => {
-  console.error("❌ SCRAPER ERROR", err);
-  process.exit(1);
-});
+if (process.argv[1] === new URL(import.meta.url).pathname) {
+  scrape().catch((err) => {
+    console.error("❌ Scrape error:", err);
+    process.exit(1);
+  });
+}
