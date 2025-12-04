@@ -34,31 +34,23 @@ jobs:
           SPORTING_LIFE_CLEARANCE_URL: "https://www.sportinglife.ca/en-CA/clearance/"
         run: npm run scrape
 
-      - name: Checkout Econo-econo111 repository
+      - name: Checkout EconoDeal front repository
         uses: actions/checkout@v4
         with:
           repository: Olivier-cousineau/Econo-econo111
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ECONODEAL_PAT }}
           path: econodeal-front
 
-      - name: Sync Sporting Life data to Econo-econo111
+      - name: Copy Sporting Life data into EconoDeal repo
         run: |
           mkdir -p econodeal-front/data/sporting-life
           cp data/sportinglife_laval_clearance.json econodeal-front/data/sporting-life/liquidation.json
 
-      - name: Commit updated data file
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/sportinglife_laval_clearance.json
-          git commit -m "Update Sporting Life Laval clearance" || echo "No changes to commit"
-          git push https://x-access-token:${GITHUB_TOKEN}@github.com/Olivier-cousineau/scraper-sporting-life.git HEAD:main
-
-      - name: Commit updated Econo-econo111 data file
+      - name: Commit and push to EconoDeal
         run: |
           cd econodeal-front
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/sporting-life/liquidation.json
-          git commit -m "Update Sporting Life Laval clearance" || echo "No changes to commit"
-          git push https://x-access-token:${GITHUB_TOKEN}@github.com/Olivier-cousineau/Econo-econo111.git HEAD:main
+          git commit -m "MAJ Sporting Life Laval" || echo "Rien à commit"
+          git push origin main
