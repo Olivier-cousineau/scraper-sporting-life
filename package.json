@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "scrape": "node scrape_sportinglife_laval.mjs"
+    "scrape": "node scrape_sportinglife_laval.mjs",
+    "scrape:locations": "node scrape_sportinglife_locations.mjs"
   },
   "dependencies": {
     "playwright": "^1.49.0"
