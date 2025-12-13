@@ -9,6 +9,8 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    env:
+      ECONOPLUS_PAT: ${{ secrets.ECONOPLUS_PAT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,10 +34,20 @@ jobs:
           DEBUG: 0
         run: npm run scrape:clearance:stores
 
+      - name: Debug ECONOPLUS_PAT presence (safe)
+        shell: bash
+        env:
+          ECONOPLUS_PAT: ${{ secrets.ECONOPLUS_PAT }}
+        run: |
+          if [ -z "${ECONOPLUS_PAT}" ]; then
+            echo "ECONOPLUS_PAT is EMPTY (not injected)"
+          else
+            echo "ECONOPLUS_PAT is present (length=${#ECONOPLUS_PAT})"
+          fi
+
       - name: Verify access to econoplus
         id: econoplus
         env:
-          ECONOPLUS_PAT: ${{ secrets.ECONOPLUS_PAT }}
           GIT_TERMINAL_PROMPT: 0
         run: |
           if [ -z "${ECONOPLUS_PAT}" ]; then
@@ -53,8 +65,6 @@ jobs:
 
       - name: Clone econoplus repo
         if: steps.econoplus.outputs.ok == 'true'
-        env:
-          ECONOPLUS_PAT: ${{ secrets.ECONOPLUS_PAT }}
         run: |
           rm -rf econoplus
           git clone https://x-access-token:${ECONOPLUS_PAT}@github.com/Olivier-cousineau/econoplus.git econoplus
