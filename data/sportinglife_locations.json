@@ -1,0 +1,15 @@
+[
+  { "name": "Toronto - Yonge & Eglinton", "storeSlug": "toronto-yonge-eglinton" },
+  { "name": "Toronto - Sherway Gardens", "storeSlug": "toronto-sherway-gardens" },
+  { "name": "Toronto - Fairview", "storeSlug": "toronto-fairview" },
+  { "name": "Vaughan - Vaughan Mills", "storeSlug": "vaughan-mills" },
+  { "name": "Markham - CF Markville", "storeSlug": "markham-cf-markville" },
+  { "name": "Burlington - Mapleview", "storeSlug": "burlington-mapleview" },
+  { "name": "Calgary - Market Mall", "storeSlug": "calgary-market-mall" },
+  { "name": "Calgary - Southcentre", "storeSlug": "calgary-southcentre" },
+  { "name": "Ottawa - Lansdowne", "storeSlug": "ottawa-lansdowne" },
+  { "name": "Ottawa - Train Yards", "storeSlug": "ottawa-train-yards" },
+  { "name": "Edmonton - Southgate", "storeSlug": "edmonton-southgate" },
+  { "name": "Mississauga - Square One", "storeSlug": "mississauga-square-one" },
+  { "name": "Winnipeg - CF Polo Park", "storeSlug": "winnipeg-cf-polo-park" }
+]
