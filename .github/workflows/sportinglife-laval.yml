@@ -11,8 +11,6 @@ on:
 jobs:
   run-scraper:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -34,23 +32,29 @@ jobs:
           SPORTING_LIFE_CLEARANCE_URL: "https://www.sportinglife.ca/en-CA/clearance/"
         run: npm run scrape
 
-      - name: Checkout EconoDeal front repository
-        uses: actions/checkout@v4
-        with:
-          repository: Olivier-cousineau/Econo-econo111
-          token: ${{ secrets.ECONODEAL_PAT }}
-          path: econodeal-front
-
-      - name: Copy Sporting Life data into EconoDeal repo
+      - name: Verify ECONOPLUS_PUSH_TOKEN is available
+        env:
+          ECONOPLUS_PUSH_TOKEN: ${{ secrets.ECONOPLUS_PUSH_TOKEN }}
         run: |
-          mkdir -p econodeal-front/data/sporting-life
-          cp data/sportinglife_laval_clearance.json econodeal-front/data/sporting-life/liquidation.json
+          if [ -z "$ECONOPLUS_PUSH_TOKEN" ]; then
+            echo "ECONOPLUS_PUSH_TOKEN secret is required for cross-repo pushes to econoplus."
+            exit 1
+          fi
 
-      - name: Commit and push to EconoDeal
+      - name: Clone econoplus repository
         run: |
-          cd econodeal-front
+          git clone https://x-access-token:${{ secrets.ECONOPLUS_PUSH_TOKEN }}@github.com/Olivier-cousineau/econoplus.git econoplus
+
+      - name: Copy Sporting Life data into econoplus repo
+        run: |
+          mkdir -p econoplus/public/sportinglife
+          cp data/sportinglife_laval_clearance.json econoplus/public/sportinglife/liquidation.json
+
+      - name: Commit and push to econoplus
+        run: |
+          cd econoplus
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/sporting-life/liquidation.json
+          git add public/sportinglife/liquidation.json
           git commit -m "MAJ Sporting Life Laval" || echo "Rien à commit"
           git push origin main
