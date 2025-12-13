@@ -24,7 +24,8 @@ jobs:
         env:
           TOTAL_SHARDS: 2
           SHARD_INDEX: 2
-          CONCURRENCY: 1
+          CONCURRENCY: 4
+          MAX_TIME_PER_STORE_MIN: 25
           DEBUG: 0
         run: npm run scrape:clearance:stores
 

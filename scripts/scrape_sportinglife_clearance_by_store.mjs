@@ -154,14 +154,24 @@ function toCsv(items) {
 }
 
 async function scrapeStore(store, options) {
-  const { debug } = options;
+  const { debug, maxTimeMs } = options;
   const storeDir = path.join(OUTPUT_ROOT, store.storeSlug || slugify(store.name));
   fs.mkdirSync(storeDir, { recursive: true });
 
   let browser;
   let page;
+  let timeoutId;
+  let timedOut = false;
+  const startTime = Date.now();
 
-  try {
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => {
+      timedOut = true;
+      reject(new Error("timeout"));
+    }, maxTimeMs);
+  });
+
+  const scrapePromise = (async () => {
     browser = await chromium.launch({ headless: true });
     page = await browser.newPage({ locale: "en-CA" });
 
@@ -226,12 +236,22 @@ async function scrapeStore(store, options) {
     fs.writeFileSync(csvPath, toCsv(unique), "utf-8");
 
     return { success: true, count: unique.length, jsonPath, csvPath };
+  })();
+
+  try {
+    const result = await Promise.race([scrapePromise, timeoutPromise]);
+    const durationSec = (Date.now() - startTime) / 1000;
+    return { ...result, durationSec, timeout: false };
   } catch (error) {
+    const durationSec = (Date.now() - startTime) / 1000;
     if (debug) {
-      await saveDebugArtifacts(page, storeDir, "debug");
+      await saveDebugArtifacts(page, storeDir, timedOut ? "debug-timeout" : "debug");
     }
-    return { success: false, count: 0, error: error?.message || String(error) };
+    const errorPayload = { success: false, count: 0, error: error?.message || String(error), timeout: timedOut, durationSec };
+    fs.writeFileSync(path.join(storeDir, "error.json"), JSON.stringify(errorPayload, null, 2), "utf-8");
+    return errorPayload;
   } finally {
+    clearTimeout(timeoutId);
     if (browser) {
       await browser.close().catch(() => {});
     }
@@ -241,7 +261,8 @@ async function scrapeStore(store, options) {
 async function run() {
   const totalShards = readEnvInt("TOTAL_SHARDS", 2);
   const shardIndex = readEnvInt("SHARD_INDEX", 1);
-  const concurrency = readEnvInt("CONCURRENCY", 1);
+  const concurrency = readEnvInt("CONCURRENCY", 4);
+  const maxTimePerStoreMin = readEnvInt("MAX_TIME_PER_STORE_MIN", 25);
   const debug = readEnvInt("DEBUG", 0) === 1;
 
   const locations = loadLocations();
@@ -258,12 +279,19 @@ async function run() {
   async function next() {
     const store = queue.shift();
     if (!store) return;
-    const promise = scrapeStore(store, { debug })
+    const promise = scrapeStore(store, { debug, maxTimeMs: maxTimePerStoreMin * 60 * 1000 })
       .then((result) => {
         results.push({ ...result, storeName: store.name, storeSlug: store.storeSlug });
       })
       .catch((error) => {
-        results.push({ success: false, count: 0, storeName: store.name, storeSlug: store.storeSlug, error: error?.message || String(error) });
+        results.push({
+          success: false,
+          count: 0,
+          storeName: store.name,
+          storeSlug: store.storeSlug,
+          error: error?.message || String(error),
+          timeout: false,
+        });
       })
       .finally(() => {
         active.splice(active.indexOf(promise), 1);
@@ -282,9 +310,18 @@ async function run() {
     shardIndex,
     totalShards,
     concurrency,
+    maxTimePerStoreMin,
     totalStores: stores.length,
     timestamp: new Date().toISOString(),
-    results,
+    results: results.map((result) => ({
+      storeName: result.storeName,
+      storeSlug: result.storeSlug,
+      ok: result.success === true,
+      count: result.count ?? 0,
+      timeout: result.timeout === true,
+      error: result.error,
+      durationSec: result.durationSec,
+    })),
   };
 
   const summaryPath = path.join(OUTPUT_ROOT, `_summary_shard_${shardIndex}.json`);
