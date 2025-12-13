@@ -1,5 +1,8 @@
 name: Scrape Sporting Life - Clearance (Shard 1/2)
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
 
@@ -29,10 +32,18 @@ jobs:
           DEBUG: 0
         run: npm run scrape:clearance:stores
 
+      - name: Verify access to econoplus
+        env:
+          GH_TOKEN: ${{ secrets.ECONOPLUS_PAT || secrets.GITHUB_TOKEN }}
+        run: |
+          git ls-remote https://x-access-token:${GH_TOKEN}@github.com/Olivier-cousineau/econoplus.git HEAD
+
       - name: Clone econoplus repo
+        env:
+          GH_TOKEN: ${{ secrets.ECONOPLUS_PAT || secrets.GITHUB_TOKEN }}
         run: |
           rm -rf econoplus
-          git clone https://x-access-token:${{ secrets.ECONOPLUS_PUSH_TOKEN }}@github.com/Olivier-cousineau/econoplus.git econoplus
+          git clone https://x-access-token:${GH_TOKEN}@github.com/Olivier-cousineau/econoplus.git econoplus
 
       - name: Sync Sporting Life outputs into econoplus
         run: |
