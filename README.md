@@ -16,6 +16,20 @@ python -m sporting_life_scraper.cli --output data/liquidation.json --format json
 python -m sporting_life_scraper.cli --output data/liquidation.csv --format csv
 ```
 
+### Localisation des magasins Sporting Life
+
+Le dépôt contient également un petit script Node/Playwright permettant de récupérer les informations des magasins (nom, adresse,
+ téléphone, heures d'ouverture). Il tente d'extraire les données depuis la page officielle du localisateur et retombe sur la
+ liste fournie ci-dessous en cas de blocage réseau.
+
+```bash
+npm run scrape:locations
+# ou
+node scrape_sportinglife_locations.mjs
+```
+
+Les données normalisées sont sauvegardées dans `data/sportinglife_locations.json`.
+
 Options disponibles :
 
 - `--results-per-page` : nombre de produits par page lors des appels à l'API (48 par défaut).
