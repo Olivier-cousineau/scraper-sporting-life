@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "scrape": "node scrape_sportinglife_laval.mjs",
-    "scrape:locations": "node scrape_sportinglife_locations.mjs"
+    "scrape:locations": "node scrape_sportinglife_locations.mjs",
+    "scrape:clearance:stores": "node scripts/scrape_sportinglife_clearance_by_store.mjs"
   },
   "dependencies": {
     "playwright": "^1.49.0"
