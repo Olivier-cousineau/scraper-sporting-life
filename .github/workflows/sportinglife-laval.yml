@@ -11,6 +11,8 @@ on:
 jobs:
   run-scraper:
     runs-on: ubuntu-latest
+    env:
+      ECONOPLUS_PAT: ${{ secrets.ECONOPLUS_PAT }}
     permissions:
       contents: write
 
@@ -34,18 +36,32 @@ jobs:
           SPORTING_LIFE_CLEARANCE_URL: "https://www.sportinglife.ca/en-CA/clearance/"
         run: npm run scrape
 
+      - name: Debug ECONOPLUS_PAT presence (safe)
+        shell: bash
+        env:
+          ECONOPLUS_PAT: ${{ secrets.ECONOPLUS_PAT }}
+        run: |
+          if [ -z "${ECONOPLUS_PAT}" ]; then
+            echo "ECONOPLUS_PAT is EMPTY (not injected)"
+          else
+            echo "ECONOPLUS_PAT is present (length=${#ECONOPLUS_PAT})"
+          fi
+
       - name: Verify access to econoplus
         env:
-          GH_TOKEN: ${{ secrets.ECONOPLUS_PAT || secrets.GITHUB_TOKEN }}
+          GIT_TERMINAL_PROMPT: 0
         run: |
-          git ls-remote https://x-access-token:${GH_TOKEN}@github.com/Olivier-cousineau/econoplus.git HEAD
+          if [ -z "${ECONOPLUS_PAT}" ]; then
+            echo "Skipping econoplus sync (missing token or no access). Artifacts will still be uploaded."
+            exit 0
+          fi
+
+          git ls-remote https://x-access-token:${ECONOPLUS_PAT}@github.com/Olivier-cousineau/econoplus.git HEAD
 
       - name: Clone econoplus repository
-        env:
-          GH_TOKEN: ${{ secrets.ECONOPLUS_PAT || secrets.GITHUB_TOKEN }}
         run: |
           rm -rf econoplus
-          git clone https://x-access-token:${GH_TOKEN}@github.com/Olivier-cousineau/econoplus.git econoplus
+          git clone https://x-access-token:${ECONOPLUS_PAT}@github.com/Olivier-cousineau/econoplus.git econoplus
 
       - name: Copy Sporting Life data into econoplus repo
         run: |
