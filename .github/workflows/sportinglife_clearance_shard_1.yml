@@ -33,24 +33,40 @@ jobs:
         run: npm run scrape:clearance:stores
 
       - name: Verify access to econoplus
+        id: econoplus
         env:
-          GH_TOKEN: ${{ secrets.ECONOPLUS_PAT || secrets.GITHUB_TOKEN }}
+          ECONOPLUS_PAT: ${{ secrets.ECONOPLUS_PAT }}
+          GIT_TERMINAL_PROMPT: 0
         run: |
-          git ls-remote https://x-access-token:${GH_TOKEN}@github.com/Olivier-cousineau/econoplus.git HEAD
+          if [ -z "${ECONOPLUS_PAT}" ]; then
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping econoplus sync (missing token or no access). Artifacts will still be uploaded."
+            exit 0
+          fi
+
+          if git ls-remote https://x-access-token:${ECONOPLUS_PAT}@github.com/Olivier-cousineau/econoplus.git >/dev/null 2>&1; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping econoplus sync (missing token or no access). Artifacts will still be uploaded."
+          fi
 
       - name: Clone econoplus repo
+        if: steps.econoplus.outputs.ok == 'true'
         env:
-          GH_TOKEN: ${{ secrets.ECONOPLUS_PAT || secrets.GITHUB_TOKEN }}
+          ECONOPLUS_PAT: ${{ secrets.ECONOPLUS_PAT }}
         run: |
           rm -rf econoplus
-          git clone https://x-access-token:${GH_TOKEN}@github.com/Olivier-cousineau/econoplus.git econoplus
+          git clone https://x-access-token:${ECONOPLUS_PAT}@github.com/Olivier-cousineau/econoplus.git econoplus
 
       - name: Sync Sporting Life outputs into econoplus
+        if: steps.econoplus.outputs.ok == 'true'
         run: |
           mkdir -p econoplus/public/sportinglife
           rsync -av outputs/sportinglife/ econoplus/public/sportinglife/
 
       - name: Commit & push to econoplus
+        if: steps.econoplus.outputs.ok == 'true'
         env:
           SHARD_INDEX: 1
         run: |
