@@ -47,6 +47,7 @@ Lancer la suite de tests unitaires (elles utilisent un client HTTP fictif, pas d
 python -m unittest
 ```
 
-## Workflow GitHub Actions
+## Workflows GitHub Actions
 
-Le workflow `.github/workflows/scrape.yml` déclenche le scraper manuellement ou chaque jour à 6h UTC. Il sauvegarde les résultats JSON en tant qu'artefact de build.
+- `.github/workflows/scrape.yml` déclenche le scraper "liquidation" manuellement ou chaque jour à 6h UTC et sauvegarde les résultats JSON en tant qu'artefact de build.
+- `.github/workflows/sportinglife-locations.yml` installe Playwright (Chromium), exécute `npm run scrape:locations` et met en artefact `data/sportinglife_locations.json`. Vous pouvez le déclencher manuellement depuis l'onglet "Actions" ou ajouter une planification similaire à celle du workflow liquidation.
